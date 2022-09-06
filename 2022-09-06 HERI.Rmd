@@ -1,0 +1,447 @@
+---
+title: "Untitled"
+author: "Josephine McKelvy"
+date: "2022-09-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+###################
+# READ THIS FIRST #
+###################
+
+# Right-click the R icon and "Run as administrator" > Tools > Check for Updates. Session > Restart R and Clear Output.
+# Create new GitHub repository. Open New Project in RStudio w/repo URL.
+# Qualtrics: Data & Analysis/Export & Import/Export Data/CSV/Use Numeric values. Extract files.
+# Identify column numbers in Excel. Rename csv being read in.
+```
+# Overview (Steps)
+- import all responses (as *.csv & numeric values)
+- subset only the data needed per chart
+- sort CATA by session, rename columns, bind
+- factor the categorical variables
+- generate average item scores for plots
+- plot the dumbbell/diverging bar charts & save
+```{r}
+###################
+# Import the data #
+###################
+
+# Import data, subset and name the variables in the dataframes, remove blanks (by language)
+raw.df <- read.csv("UNC Center for Health Equity Research - Health Equity Summer Intensive Evaluation_September 6, 2022_07.10.csv", stringsAsFactors = TRUE)
+raw.df <- raw.df[3:nrow(raw.df),] #cut rows 2-3 with question wording & "ImportID"
+raw.df$Q3 <- as.character(raw.df$Q3) #convert CATA to character and not factor
+
+###################
+# DUMBBELL CHARTS #
+###################
+
+#slice Loop & Merge dataset by sessions for dumbbell
+library(data.table)
+ksa01.df <- raw.df[raw.df$Q3 %like% "1",c(21,22:25)]   #will also catch 10,11,12,14
+ksa02.df <- raw.df[raw.df$Q3 %like% "2",c(21,90:93)]   #will also catch 12
+ksa03.df <- raw.df[raw.df$Q3 %like% "3",c(21,158:161)]
+ksa04.df <- raw.df[raw.df$Q3 %like% "4",c(21,226:229)] #will also catch 14
+ksa05.df <- raw.df[raw.df$Q3 %like% "5",c(21,294:297)]
+ksa06.df <- raw.df[raw.df$Q3 %like% "6",c(21,362:365)]
+ksa07.df <- raw.df[raw.df$Q3 %like% "7",c(21,430:433)]
+ksa08.df <- raw.df[raw.df$Q3 %like% "8",c(21,498:501)]
+ksa09.df <- raw.df[raw.df$Q3 %like% "9",c(21,566:569)]
+ksa10.df <- raw.df[raw.df$Q3 %like% "10",c(21,634:637)]
+ksa11.df <- raw.df[raw.df$Q3 %like% "11",c(21,702:705)]
+ksaws.df <- raw.df[raw.df$Q3 %like% "14",c(21,770:773)]
+
+#rename the session no. for CATA obs & listwise delete missingness
+ksa01.df$Q3[ksa01.df$Q3 != "1"] <- "1"                  #this is key for the CATA
+ksa01.df[ksa01.df==""] <- NA
+ksa01.df <- na.omit(ksa01.df)
+
+ksa02.df$Q3[ksa02.df$Q3 != "2"] <- "2"
+ksa02.df[ksa02.df==""] <- NA
+ksa02.df <- na.omit(ksa02.df)
+
+ksa03.df$Q3[ksa03.df$Q3 != "3"] <- "3"
+ksa03.df[ksa03.df==""] <- NA
+ksa03.df <- na.omit(ksa03.df)
+
+ksa04.df$Q3[ksa04.df$Q3 != "4"] <- "4"
+ksa04.df[ksa04.df==""] <- NA
+ksa04.df <- na.omit(ksa04.df)
+
+ksa05.df$Q3[ksa05.df$Q3 != "5"] <- "5"
+ksa05.df[ksa05.df==""] <- NA
+ksa05.df <- na.omit(ksa05.df)
+
+ksa06.df$Q3[ksa06.df$Q3 != "6"] <- "6"
+ksa06.df[ksa06.df==""] <- NA
+ksa06.df <- na.omit(ksa06.df)
+
+ksa07.df$Q3[ksa07.df$Q3 != "7"] <- "7"
+ksa07.df[ksa07.df==""] <- NA
+ksa07.df <- na.omit(ksa07.df)
+
+ksa08.df$Q3[ksa08.df$Q3 != "8"] <- "8"
+ksa08.df[ksa08.df==""] <- NA
+ksa08.df <- na.omit(ksa08.df)
+
+ksa09.df$Q3[ksa09.df$Q3 != "9"] <- "9"
+ksa09.df[ksa09.df==""] <- NA
+ksa09.df <- na.omit(ksa09.df)
+
+ksa10.df$Q3[ksa10.df$Q3 != "10"] <- "10"
+ksa10.df[ksa10.df==""] <- NA
+ksa10.df <- na.omit(ksa10.df)
+
+ksa11.df$Q3[ksa11.df$Q3 != "11"] <- "11"
+ksa11.df[ksa11.df==""] <- NA
+ksa11.df <- na.omit(ksa11.df)
+
+ksaws.df$Q3[ksaws.df$Q3 != "12"] <- "12"
+ksaws.df[ksaws.df==""] <- NA
+ksaws.df <- na.omit(ksaws.df)
+
+# rename all the columns in these dumbbell dataframes
+rename_ksa <- lapply(list(ksa01.df,
+                          ksa02.df,
+                          ksa03.df,
+                          ksa04.df,
+                          ksa05.df,
+                          ksa06.df,
+                          ksa07.df,
+                          ksa08.df,
+                          ksa09.df,
+                          ksa10.df,
+                          ksa11.df,
+                          ksaws.df),function(x) {
+  names(x)<- c("session",
+               "prek","prea","postk","posta")
+ x})
+ 
+names(rename_ksa) <- c("ksa01.df",
+                       "ksa02.df",
+                       "ksa03.df",
+                       "ksa04.df",
+                       "ksa05.df",
+                       "ksa06.df",
+                       "ksa07.df",
+                       "ksa08.df",
+                       "ksa09.df",
+                       "ksa10.df",
+                       "ksa11.df",
+                       "ksaws.df")
+list2env(rename_ksa, envir = .GlobalEnv)
+                            
+#bind the dumbbell dataframes into one
+wide.df <- rbind(ksa01.df,
+                    ksa02.df,
+                    ksa03.df,
+                    ksa04.df,
+                    ksa05.df,
+                    ksa06.df,
+                    ksa07.df,
+                    ksa08.df,
+                    ksa09.df,
+                    ksa10.df,
+                    ksa11.df,
+                    ksaws.df)
+
+#convert dumbbell variables to factor or numeric type
+wide.df$session <- factor(wide.df$session,
+                    levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
+                    labels = c("Concept of Trust",
+                               "Structural Racism",
+                               "Participatory Budgeting",
+                               "Social Determinants of Health",
+                               "Data is More than Numbers",
+                               "Equitable Partnerships",
+                               "Applying an Equity Lens",
+                               "Race & Racism in Healthcare",
+                               "Intervention Mapping",
+                               "Culturally Responsive Evaluation",
+                               "Co-creating Data Visualization",
+                               "Co-Lab(orative) Learning Workshop"))
+wide.df$prek  <- as.numeric(as.character(wide.df$prek))
+wide.df$prea  <- as.numeric(as.character(wide.df$prea))
+wide.df$postk <- as.numeric(as.character(wide.df$postk))
+wide.df$posta <- as.numeric(as.character(wide.df$posta))
+
+#generate average scores for dumbbells
+library(dplyr)
+
+#knowledge for all sessions
+wide.df %>%
+  group_by(session) %>%
+  summarise_at(vars("prek","postk"), mean)-> prepostk.df
+prepostk.df$id <- "knowledge"                                 #this is key for aggregated dataset
+names(prepostk.df)<- c("session", "pre","post","id")
+
+#ability for all sessions
+wide.df %>%
+  group_by(session) %>%
+  summarise_at(vars("prea","posta"), mean)-> preposta.df
+preposta.df$id <- "ability"
+names(preposta.df)<- c("session", "pre","post","id")
+
+#knowledge & ability by session: https://r-graph-gallery.com/web-extended-dumbbell-plot-ggplot2.html
+prepost.df <- rbind(prepostk.df,preposta.df)
+
+####################################
+# Change the dumbbell dataset here #
+####################################
+gold <- "#d8b365"
+teal <- "#5ab4ab"
+
+kora <- "knowledge"
+#kora <- "ability"
+
+koratitle <- "Knowledge Ratings Before & After Each Session"
+#koratitle <- "Ability Ratings Before & After Each Session"
+xsubtitle <- "Average Ratings (out of 5)"
+caption <- "Source: 2022 HERI Evaluation Survey"
+
+###########################
+# K or A for all sessions #
+###########################
+library(ggplot2)
+#install.packages("ggalt")
+library(ggalt)
+prepost.df [prepost.df$id %like% kora,] %>% 
+  mutate(difference = (post-pre)) %>%
+  ggplot() + 
+  aes(x = pre,
+      xend = post,
+#      y = session) + #default: sorted by session name
+      y = reorder(session, difference), group = session) + #sorted by greatest difference
+  geom_dumbbell(
+    size_x = 2, colour_x = gold,
+    size_xend = 2, colour_xend = teal,
+    size = 1,
+    dot_guide = TRUE,
+    dot_guide_size = 0.15,
+    dot_guide_colour = "grey60") +
+  scale_x_continuous(breaks = seq (1,5,1),limits = c(1,5)) + #show x axis from 1 to 5 in intervals of 1, even if no data
+#  geom_text(data=filter(bysession.df, session=="knowledge"),
+#            aes(x=pre, y=session, label="Before"),
+#            color = gold, size=2, vjust=-1.5, fontface="bold",family="Lato")+
+#  geom_text(data=filter(bysession.df, session=="knowledge"),
+#            aes(x=post, y=session, label = "After"),
+#            color = teal, size=2, vjust=-1.5, fontface="bold",family="Lato")+
+  labs(title = koratitle, y = NULL, x = xsubtitle, 
+       caption = caption) +
+  theme(panel.border = element_blank(),                                   #no gap
+        panel.background = element_rect(fill = 'transparent',color = NA), #transparent bkgd
+        panel.grid.minor = element_blank(), 
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_line(), 
+        axis.ticks = element_blank())                                     #no ticks
+
+ggsave("Knowledge - All Sessions.png", height = 3, width = 7)#works with kora, plus guiding lines, sorted by greatest difference first
+
+####################################
+# Change the dumbbell dataset here #
+####################################
+
+thissession <- "Concept of Trust"
+#thissession <- "Structural Racism"
+#thissession <- "Participatory Budgeting"
+#thissession <- "Social Determinants of Health"
+#thissession <- "Data is More than Numbers"
+#thissession <- "Equitable Partnerships"
+#thissession <- "Applying an Equity Lens"
+#thissession <- "Race & Racism in Healthcare"
+#thissession <- "Intervention Mapping"
+#thissession <- "Culturally Responsive Evaluation"
+#thissession <- "Co-creating Data Visualization"
+#thissession <- "Co-Lab(orative) Learning Workshop"
+
+######################
+# K and A by session #
+######################
+library(ggplot2)
+library(ggalt)
+prepost.df [prepost.df$session %like% thissession,] %>% 
+  mutate(difference = (post-pre)) %>%
+  ggplot() + 
+  aes(x = pre,
+      xend = post,
+      y = reorder(id, difference), group = id) + 
+  geom_dumbbell(
+    size_x = 2, colour_x = gold,
+    size_xend = 2, colour_xend = teal,
+    size = 1,
+    dot_guide = TRUE,
+    dot_guide_size = 0.15,
+    dot_guide_colour = "grey60") +
+  scale_x_continuous(breaks = seq (1,5,1),limits = c(1,5)) + #show x axis from 1 to 5 in intervals of 1, even if no data
+#  geom_text(data=filter(bysession.df, session=="knowledge"),
+#            aes(x=pre, y=session, label="Before"),
+#            color = gold, size=2, vjust=-1.5, fontface="bold",family="Lato")+
+#  geom_text(data=filter(bysession.df, session=="knowledge"),
+#            aes(x=post, y=session, label = "After"),
+#            color = teal, size=2, vjust=-1.5, fontface="bold",family="Lato")+
+  labs(title = thissession, y=NULL, x=xsubtitle, 
+       subtitle = "Changes in knowledge & ability ratings", 
+       caption = caption) +
+  theme(
+        panel.grid.minor = element_blank(), 
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_line(), 
+        axis.ticks = element_blank(),        #no ticks
+        panel.border = element_blank(),      #no gap
+        panel.background = element_rect(fill = 'transparent',color = NA) #transparent bkgd
+        )
+ggsave("K and A - Session 01.png", height = 1.5, width = 5)#works with kora, plus guiding lines, sorted by greatest difference first
+
+#################
+# LIKERT CHARTS #
+#################
+
+#subset Likert scale items by session
+likert01.df <- raw.df[raw.df$Q3 %like% "1",c(21,71:74)]   #will also catch 10,11,12,14
+likert02.df <- raw.df[raw.df$Q3 %like% "2",c(21,135:138)] #will also catch 12
+likert03.df <- raw.df[raw.df$Q3 %like% "3",c(21,199:202)]
+likert04.df <- raw.df[raw.df$Q3 %like% "4",c(21,263:266)] #will also catch 14
+likert05.df <- raw.df[raw.df$Q3 %like% "5",c(21,327:330)]
+likert06.df <- raw.df[raw.df$Q3 %like% "6",c(21,391:394)]
+likert07.df <- raw.df[raw.df$Q3 %like% "7",c(21,455:458)]
+likert08.df <- raw.df[raw.df$Q3 %like% "8",c(21,519:522)]
+likert09.df <- raw.df[raw.df$Q3 %like% "9",c(21,583:586)]
+likert10.df <- raw.df[raw.df$Q3 %like% "10",c(21,647:650)]
+likert11.df <- raw.df[raw.df$Q3 %like% "11",c(21,711:714)]
+
+#rename the Likert session no. for CATA obs & listwise delete missingness
+likert01.df$Q3[likert01.df$Q3 != "1"] <- "1"              #this is key for CATA
+likert01.df[likert01.df==""] <- NA
+likert01.df <- na.omit(likert01.df)
+
+likert02.df$Q3[likert02.df$Q3 != "2"] <- "2"
+likert02.df[likert02.df==""] <- NA
+likert02.df <- na.omit(likert02.df)
+
+likert03.df$Q3[likert03.df$Q3 != "3"] <- "3"
+likert03.df[likert03.df==""] <- NA
+likert03.df <- na.omit(likert03.df)
+
+likert04.df$Q3[likert04.df$Q3 != "4"] <- "4"
+likert04.df[likert04.df==""] <- NA
+likert04.df <- na.omit(likert04.df)
+
+likert05.df$Q3[likert05.df$Q3 != "5"] <- "5"
+likert05.df[likert05.df==""] <- NA
+likert05.df <- na.omit(likert05.df)
+
+likert06.df$Q3[likert06.df$Q3 != "6"] <- "6"
+likert06.df[likert06.df==""] <- NA
+likert06.df <- na.omit(likert06.df)
+
+likert07.df$Q3[likert07.df$Q3 != "7"] <- "7"
+likert07.df[likert07.df==""] <- NA
+likert07.df <- na.omit(likert07.df)
+
+likert08.df$Q3[likert08.df$Q3 != "8"] <- "8"
+likert08.df[likert08.df==""] <- NA
+likert08.df <- na.omit(likert08.df)
+
+likert09.df$Q3[likert09.df$Q3 != "9"] <- "9"
+likert09.df[likert09.df==""] <- NA
+likert09.df <- na.omit(likert09.df)
+
+likert10.df$Q3[likert10.df$Q3 != "10"] <- "10"
+likert10.df[likert10.df==""] <- NA
+likert10.df <- na.omit(likert10.df)
+
+likert11.df$Q3[likert11.df$Q3 != "11"] <- "11"
+likert11.df[likert11.df==""] <- NA
+likert11.df <- na.omit(likert11.df)
+
+# rename all the columns in these Likert dataframes
+rename_likert <- lapply(list(likert01.df,
+                             likert02.df,
+                             likert03.df,
+                             likert04.df,
+                             likert05.df,
+                             likert06.df,
+                             likert07.df,
+                             likert08.df,
+                             likert09.df,
+                             likert10.df,
+                             likert11.df),function(x) {
+  names(x)<- c("session",
+               "effective presenter",
+               "knowledgeable presenter",
+               "insightful information",
+               "relevant techniques")
+ x})
+ 
+names(rename_likert) <- c("likert01.df",
+                          "likert02.df",
+                          "likert03.df",
+                          "likert04.df",
+                          "likert05.df",
+                          "likert06.df",
+                          "likert07.df",
+                          "likert08.df",
+                          "likert09.df",
+                          "likert10.df",
+                          "likert11.df")
+list2env(rename_likert, envir = .GlobalEnv)
+                            
+#bind the dataframes into one
+likert.df <- rbind(likert01.df,
+                   likert02.df,
+                   likert03.df,
+                   likert04.df,
+                   likert05.df,
+                   likert06.df,
+                   likert07.df,
+                   likert08.df,
+                   likert09.df,
+                   likert10.df,
+                   likert11.df)
+
+#convert variables to factor or numeric type
+likert.df$session <- factor(likert.df$session,
+                    levels = c(1,2,3,4,5,6,7,8,9,10,11),
+                    labels = c("Concept of Trust",
+                               "Structural Racism",
+                               "Participatory Budgeting",
+                               "Social Determinants of Health",
+                               "Data is More than Numbers",
+                               "Equitable Partnerships",
+                               "Applying an Equity Lens",
+                               "Race & Racism in Healthcare",
+                               "Intervention Mapping",
+                               "Culturally Responsive Evaluation",
+                               "Co-creating Data Visualization"))
+likertlabels <- c("Strongly Disagree",
+                  "Somewhat Disagree",
+                  "Neither",
+                  "Somewhat Agree",
+                  "Strongly Agree")
+likert.df$`effective presenter` <- factor(likert.df$`effective presenter`,
+                                          levels = c(1,2,3,4,5),
+                                          labels = likertlabels)
+likert.df$`knowledgeable presenter` <- factor(likert.df$`knowledgeable presenter`,
+                                          levels = c(1,2,3,4,5),
+                                          labels = likertlabels)
+likert.df$information <- factor(likert.df$`insighful information`,
+                                          levels = c(1,2,3,4,5),
+                                          labels = likertlabels)
+likert.df$techniques <- factor(likert.df$`relevant techniques`,
+                                          levels = c(1,2,3,4,5),
+                                          labels = likertlabels)
+library(likert)
+graph1 <- likert(likert.df[,2:5])
+plot(graph1, positive.order = TRUE) + labs(title = thissession)
+ggsave("Quant - Session 01.png", width = 9, height = 2.5)
+```
