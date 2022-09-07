@@ -52,7 +52,8 @@ library(ggplot2)
 #install.packages("ggalt")
 library(ggalt)      #for geom_dumbbell
 library(likert)
-
+#install.packages("writexl")
+library(writexl)
 #########################
 # Wrangle Dumbbell Data #
 #########################
@@ -702,7 +703,7 @@ feedbackws.df$Q3[feedbackws.df$Q3 != "12"] <- "12"
 feedbackws.df[feedbackws.df==""] <- NA
 
 feedbackheri.df$Q3[feedbackheri.df$Q3 != "14"] <- "14"
-feedbackheri.df[feedbacheris.df==""] <- NA
+feedbackheri.df[feedbackheri.df==""] <- NA
 
 # rename all the columns in these Likert dataframes
 rename_feedback <- lapply(list(feedback01.df,
@@ -759,7 +760,7 @@ feedback.df <- rbind(feedback01.df,
                    feedback11.df,
                    feedbackws.df)
 
-#convert variables to factor or numeric type
+#convert feedback variables to factor 
 feedback.df$session <- factor(feedback.df$session,
                     levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
                     labels = c("Concept of Trust",
@@ -783,6 +784,8 @@ feedbackheri.df$session <- factor(feedbackheri.df$session,
 feedback.df$role <- factor(feedback.df$role,
                            levels = c(1,2,7,5,4,6),
                            labels = c("Student","Faculty","Research Staff","Corporate/Industry","Community Member","Other"))
+
+write_xlsx(feedback.df,"C:\\Users\\josep\\Documents\\HERI\\feedback.xlsx") #create a spreadsheet out of the dataframe; will stop knitting
 
 #####################
 # Dumbbell Settings #

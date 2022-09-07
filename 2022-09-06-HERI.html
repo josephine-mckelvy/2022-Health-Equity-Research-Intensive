@@ -722,6 +722,8 @@ overall.df$session &lt;- factor(overall.df$session,
 overall.df$rating  &lt;- as.numeric(as.character(overall.df$rating))
 
 #generate average scores for overall Q
+overalltot &lt;- mean(overall.df$rating)
+
 overall.df %&gt;%
   group_by(session) %&gt;%
   summarise_at(vars(&quot;rating&quot;), mean)-&gt; overall.df
@@ -898,7 +900,7 @@ likertws.df$`relevant techniques` &lt;- factor(likertws.df$`relevant techniques`
                                           levels = c(1,2,3,4,5),
                                           labels = likertlabels)
 #######################
-# Wrangle Likely Data #
+# Wrangle Likert Data #
 #######################
 
 #subset likelihood items by session
@@ -964,7 +966,7 @@ likelyws.df$Q3[likelyws.df$Q3 != &quot;12&quot;] &lt;- &quot;12&quot;
 likelyws.df[likelyws.df==&quot;&quot;] &lt;- NA
 likelyws.df &lt;- na.omit(likelyws.df)
 
-# rename all the columns in these Likert dataframes
+# rename all the columns in these likelihood dataframes
 rename_likely &lt;- lapply(list(likely01.df,
                              likely02.df,
                              likely03.df,
@@ -996,7 +998,7 @@ names(rename_likely) &lt;- c(&quot;likely01.df&quot;,
                           &quot;likelyws.df&quot;)
 list2env(rename_likely, envir = .GlobalEnv)</code></pre>
 <pre><code>## &lt;environment: R_GlobalEnv&gt;</code></pre>
-<pre class="r"><code>#bind the dataframes into one
+<pre class="r"><code>#bind the likelihood dataframes into one
 likely.df &lt;- rbind(likely01.df,
                    likely02.df,
                    likely03.df,
@@ -1010,7 +1012,7 @@ likely.df &lt;- rbind(likely01.df,
                    likely11.df,
                    likelyws.df)
 
-#convert variables to factor or numeric type
+#convert likelihood variables to factor or numeric type
 likely.df$session &lt;- factor(likely.df$session,
                     levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
                     labels = c(&quot;Concept of Trust&quot;,
@@ -1037,9 +1039,9 @@ likely.df$`recommend this session to others` &lt;- factor(likely.df$`recommend t
                                           levels = c(1,2,3,4,5),
                                           labels = likelylabels)
 
-###########
-# Comments#
-###########
+####################
+# Wrangle Feedback #
+####################
 feedback01.df &lt;- raw.df[raw.df$Q3 %like% &quot;1&quot;,c(19,21,83,85)]   #will also catch 10,11,12,14
 feedback02.df &lt;- raw.df[raw.df$Q3 %like% &quot;2&quot;,c(19,21,147,149)] #will also catch 12
 feedback03.df &lt;- raw.df[raw.df$Q3 %like% &quot;3&quot;,c(19,21,211,213)]
@@ -1052,6 +1054,7 @@ feedback09.df &lt;- raw.df[raw.df$Q3 %like% &quot;9&quot;,c(19,21,595,597)]
 feedback10.df &lt;- raw.df[raw.df$Q3 %like% &quot;10&quot;,c(19,21,659,661)]
 feedback11.df &lt;- raw.df[raw.df$Q3 %like% &quot;11&quot;,c(19,21,723,725)]
 feedbackws.df &lt;- raw.df[raw.df$Q3 %like% &quot;12&quot;,c(19,21,788,789)]
+feedbackheri.df &lt;- raw.df[raw.df$Q3 %like% &quot;14&quot;, c(19,21,854:856)]
 
 #rename the likelihood session no. for CATA obs &amp; listwise delete missingness
 feedback01.df$Q3[feedback01.df$Q3 != &quot;1&quot;] &lt;- &quot;1&quot;              #this is key for CATA
@@ -1090,6 +1093,9 @@ feedback11.df[feedback11.df==&quot;&quot;] &lt;- NA
 feedbackws.df$Q3[feedbackws.df$Q3 != &quot;12&quot;] &lt;- &quot;12&quot;
 feedbackws.df[feedbackws.df==&quot;&quot;] &lt;- NA
 
+feedbackheri.df$Q3[feedbackheri.df$Q3 != &quot;14&quot;] &lt;- &quot;14&quot;
+feedbackheri.df[feedbackheri.df==&quot;&quot;] &lt;- NA
+
 # rename all the columns in these Likert dataframes
 rename_feedback &lt;- lapply(list(feedback01.df,
                                feedback02.df,
@@ -1126,6 +1132,10 @@ list2env(rename_feedback, envir = .GlobalEnv)</code></pre>
                         &quot;use in work&quot;,
                         &quot;session improvements&quot;,
                         &quot;session relevance&quot;)
+names(feedbackheri.df) &lt;- c(&quot;role&quot;,&quot;session&quot;,
+                            &quot;networking&quot;,
+                            &quot;event improvements&quot;,
+                            &quot;event successes&quot;)
                             
 #bind the dataframes into one
 feedback.df &lt;- rbind(feedback01.df,
@@ -1159,10 +1169,24 @@ feedback.df$session &lt;- factor(feedback.df$session,
 feedback06.df$session &lt;- factor(feedback06.df$session,
                     levels = c(6),
                     labels = c(&quot;Equitable Partnerships&quot;))
+feedbackheri.df$session &lt;- factor(feedbackheri.df$session,
+                    levels = c(14),
+                    labels = c(&quot;HERI&quot;))
+feedback.df$role &lt;- factor(feedback.df$role,
+                           levels = c(1,2,7,5,4,6),
+                           labels = c(&quot;Student&quot;,&quot;Faculty&quot;,&quot;Research Staff&quot;,&quot;Corporate/Industry&quot;,&quot;Community Member&quot;,&quot;Other&quot;))
 
 #####################
 # Dumbbell Settings #
 #####################
+
+# Version 1: https://r-graph-gallery.com/web-extended-dumbbell-plot-ggplot2.html (too many dots from full dataset)
+# Version 2: from IIN (just dots plus legend with generated averages)
+# Version 3: https://datavizpyr.com/dumbbell-plot-in-r-with-ggplot2/(did not print)
+# Version 4: https://www.geeksforgeeks.org/how-to-make-dumbbell-plot-in-r-with-ggplot2/ (works with generated averages, sorted by session name)
+# Version 5: https://www.youtube.com/watch?v=USNOB-5ou8k&amp;ab_channel=BusinessScience at 2:1 (works with generated averages, plus guiding lines, sorted by greatest difference)
+# Version 6: https://www.connorrothschild.com/post/dumbbell-plots/ with difference scores (works but can&#39;t get difference scores to print)
+
 gold &lt;- &quot;#d8b365&quot;
 teal &lt;- &quot;#5ab4ab&quot;
 
