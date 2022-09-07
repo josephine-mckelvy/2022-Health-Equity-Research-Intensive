@@ -508,7 +508,7 @@ likertws.df$`relevant techniques` <- factor(likertws.df$`relevant techniques`,
                                           levels = c(1,2,3,4,5),
                                           labels = likertlabels)
 #######################
-# Wrangle Likely Data #
+# Wrangle Likert Data #
 #######################
 
 #subset likelihood items by session
@@ -574,7 +574,7 @@ likelyws.df$Q3[likelyws.df$Q3 != "12"] <- "12"
 likelyws.df[likelyws.df==""] <- NA
 likelyws.df <- na.omit(likelyws.df)
 
-# rename all the columns in these Likert dataframes
+# rename all the columns in these likelihood dataframes
 rename_likely <- lapply(list(likely01.df,
                              likely02.df,
                              likely03.df,
@@ -606,7 +606,7 @@ names(rename_likely) <- c("likely01.df",
                           "likelyws.df")
 list2env(rename_likely, envir = .GlobalEnv)
 
-#bind the dataframes into one
+#bind the likelihood dataframes into one
 likely.df <- rbind(likely01.df,
                    likely02.df,
                    likely03.df,
@@ -620,7 +620,7 @@ likely.df <- rbind(likely01.df,
                    likely11.df,
                    likelyws.df)
 
-#convert variables to factor or numeric type
+#convert likelihood variables to factor or numeric type
 likely.df$session <- factor(likely.df$session,
                     levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
                     labels = c("Concept of Trust",
@@ -647,9 +647,9 @@ likely.df$`recommend this session to others` <- factor(likely.df$`recommend this
                                           levels = c(1,2,3,4,5),
                                           labels = likelylabels)
 
-###########
-# Comments#
-###########
+####################
+# Wrangle Feedback #
+####################
 feedback01.df <- raw.df[raw.df$Q3 %like% "1",c(19,21,83,85)]   #will also catch 10,11,12,14
 feedback02.df <- raw.df[raw.df$Q3 %like% "2",c(19,21,147,149)] #will also catch 12
 feedback03.df <- raw.df[raw.df$Q3 %like% "3",c(19,21,211,213)]
@@ -787,6 +787,14 @@ feedback.df$role <- factor(feedback.df$role,
 #####################
 # Dumbbell Settings #
 #####################
+
+# Version 1: https://r-graph-gallery.com/web-extended-dumbbell-plot-ggplot2.html (too many dots from full dataset)
+# Version 2: from IIN (just dots plus legend with generated averages)
+# Version 3: https://datavizpyr.com/dumbbell-plot-in-r-with-ggplot2/(did not print)
+# Version 4: https://www.geeksforgeeks.org/how-to-make-dumbbell-plot-in-r-with-ggplot2/ (works with generated averages, sorted by session name)
+# Version 5: https://www.youtube.com/watch?v=USNOB-5ou8k&ab_channel=BusinessScience at 2:1 (works with generated averages, plus guiding lines, sorted by greatest difference)
+# Version 6: https://www.connorrothschild.com/post/dumbbell-plots/ with difference scores (works but can't get difference scores to print)
+
 gold <- "#d8b365"
 teal <- "#5ab4ab"
 
