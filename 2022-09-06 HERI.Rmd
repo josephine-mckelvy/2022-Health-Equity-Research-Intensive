@@ -54,6 +54,7 @@ library(ggalt)      #for geom_dumbbell
 library(likert)
 #install.packages("writexl")
 library(writexl)
+
 #########################
 # Wrangle Dumbbell Data #
 #########################
@@ -87,7 +88,7 @@ ksa03.df <- na.omit(ksa03.df)
 
 ksa04.df$Q3[ksa04.df$Q3 != "4"] <- "4"
 ksa04.df[ksa04.df==""] <- NA
-ksa04.df <- na.omit(ksa04.df)
+ksa04.df <- na.omit(ksa04.df)                          #listwise delete missingness, else can't compute means
 
 ksa05.df$Q3[ksa05.df$Q3 != "5"] <- "5"
 ksa05.df[ksa05.df==""] <- NA
@@ -168,19 +169,19 @@ wide.df <- rbind(ksa01.df,
 
 #convert dumbbell variables to factor or numeric type
 wide.df$session <- factor(wide.df$session,
-                    levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
-                    labels = c("Concept of Trust",
-                               "Structural Racism",
-                               "Participatory Budgeting",
-                               "Social Determinants of Health",
-                               "Data is More than Numbers",
-                               "Equitable Partnerships",
-                               "Applying an Equity Lens",
-                               "Race & Racism in Healthcare",
-                               "Intervention Mapping",
-                               "Culturally Responsive Evaluation",
-                               "Co-creating Data Visualization",
-                               "Co-Lab(orative) Learning Workshop"))
+                          levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
+                          labels = c("Concept of Trust",
+                                     "Structural Racism",
+                                     "Participatory Budgeting",
+                                     "Social Determinants of Health",
+                                     "Data is More than Numbers",
+                                     "Equitable Partnerships",
+                                     "Applying an Equity Lens",
+                                     "Race & Racism in Healthcare",
+                                     "Intervention Mapping",
+                                     "Culturally Responsive Evaluation",
+                                     "Co-creating Data Visualization",
+                                     "Co-Lab(orative) Learning Workshop"))
 wide.df$prek  <- as.numeric(as.character(wide.df$prek))
 wide.df$prea  <- as.numeric(as.character(wide.df$prea))
 wide.df$postk <- as.numeric(as.character(wide.df$postk))
@@ -315,19 +316,19 @@ overall.df <- rbind(overall01.df,
 
 #convert overall variables to factor or numeric type
 overall.df$session <- factor(overall.df$session,
-                    levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
-                    labels = c("Concept of Trust",
-                               "Structural Racism",
-                               "Participatory Budgeting",
-                               "Social Determinants of Health",
-                               "Data is More than Numbers",
-                               "Equitable Partnerships",
-                               "Applying an Equity Lens",
-                               "Race & Racism in Healthcare",
-                               "Intervention Mapping",
-                               "Culturally Responsive Evaluation",
-                               "Co-creating Data Visualization",
-                               "Co-Lab(orative) Learning Workshop"))
+                             levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
+                             labels = c("Concept of Trust",
+                                        "Structural Racism",
+                                        "Participatory Budgeting",
+                                        "Social Determinants of Health",
+                                        "Data is More than Numbers",
+                                        "Equitable Partnerships",
+                                        "Applying an Equity Lens",
+                                        "Race & Racism in Healthcare",
+                                        "Intervention Mapping",
+                                        "Culturally Responsive Evaluation",
+                                        "Co-creating Data Visualization",
+                                        "Co-Lab(orative) Learning Workshop"))
 overall.df$rating  <- as.numeric(as.character(overall.df$rating))
 
 #generate average scores for overall Q
@@ -458,21 +459,21 @@ likert.df <- rbind(likert01.df,
 
 #convert variables to factor or numeric type
 likert.df$session <- factor(likert.df$session,
-                    levels = c(1,2,3,4,5,6,7,8,9,10,11),
-                    labels = c("Concept of Trust",
-                               "Structural Racism",
-                               "Participatory Budgeting",
-                               "Social Determinants of Health",
-                               "Data is More than Numbers",
-                               "Equitable Partnerships",
-                               "Applying an Equity Lens",
-                               "Race & Racism in Healthcare",
-                               "Intervention Mapping",
-                               "Culturally Responsive Evaluation",
-                               "Co-creating Data Visualization"))
+                            levels = c(1,2,3,4,5,6,7,8,9,10,11),
+                            labels = c("Concept of Trust",
+                                       "Structural Racism",
+                                       "Participatory Budgeting",
+                                       "Social Determinants of Health",
+                                       "Data is More than Numbers",
+                                       "Equitable Partnerships",
+                                       "Applying an Equity Lens",
+                                       "Race & Racism in Healthcare",
+                                       "Intervention Mapping",
+                                       "Culturally Responsive Evaluation",
+                                       "Co-creating Data Visualization"))
 likertws.df$session <- factor(likertws.df$session,
-                    levels = c(12),
-                    labels = c("Co(Laborative) Learning Workshop"))
+                              levels = c(12),
+                              labels = c("Co(Laborative) Learning Workshop"))
 
 likertlabels <- c("Strongly Disagree",
                   "Somewhat Disagree",
@@ -623,30 +624,30 @@ likely.df <- rbind(likely01.df,
 
 #convert likelihood variables to factor or numeric type
 likely.df$session <- factor(likely.df$session,
-                    levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
-                    labels = c("Concept of Trust",
-                               "Structural Racism",
-                               "Participatory Budgeting",
-                               "Social Determinants of Health",
-                               "Data is More than Numbers",
-                               "Equitable Partnerships",
-                               "Applying an Equity Lens",
-                               "Race & Racism in Healthcare",
-                               "Intervention Mapping",
-                               "Culturally Responsive Evaluation",
-                               "Co-creating Data Visualization",
-                               "Co(Laborative) Learning Workshop"))
+                            levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
+                            labels = c("Concept of Trust",
+                                       "Structural Racism",
+                                       "Participatory Budgeting",
+                                       "Social Determinants of Health",
+                                       "Data is More than Numbers",
+                                       "Equitable Partnerships",
+                                       "Applying an Equity Lens",
+                                       "Race & Racism in Healthcare",
+                                       "Intervention Mapping",
+                                       "Culturally Responsive Evaluation",
+                                       "Co-creating Data Visualization",
+                                       "Co(Laborative) Learning Workshop"))
 likelylabels <- c("Not at all Likely",
                   "Somewhat Unlikely",
                   "Neutral",
                   "Somewhat Likely",
                   "Extremely Likely")
 likely.df$`use what you learned` <- factor(likely.df$`use what you learned`,
-                                          levels = c(1,2,3,4,5),
-                                          labels = likelylabels)
+                                           levels = c(1,2,3,4,5),
+                                           labels = likelylabels)
 likely.df$`recommend this session to others` <- factor(likely.df$`recommend this session to others`,
-                                          levels = c(1,2,3,4,5),
-                                          labels = likelylabels)
+                                           levels = c(1,2,3,4,5),
+                                           labels = likelylabels)
 
 ####################
 # Wrangle Feedback #
@@ -748,17 +749,17 @@ names(feedbackheri.df) <- c("role","session",
                             
 #bind the dataframes into one
 feedback.df <- rbind(feedback01.df,
-                   feedback02.df,
-                   feedback03.df,
-                   feedback04.df,
-                   feedback05.df,
-#                   feedback06.df,
-                   feedback07.df,
-                   feedback08.df,
-                   feedback09.df,
-                   feedback10.df,
-                   feedback11.df,
-                   feedbackws.df)
+                     feedback02.df,
+                     feedback03.df,
+                     feedback04.df,
+                     feedback05.df,
+#                     feedback06.df,
+                     feedback07.df,
+                     feedback08.df,
+                     feedback09.df,
+                     feedback10.df,
+                     feedback11.df,
+                     feedbackws.df)
 
 #convert feedback variables to factor 
 feedback.df$session <- factor(feedback.df$session,
@@ -776,16 +777,18 @@ feedback.df$session <- factor(feedback.df$session,
                                "Co-creating Data Visualization",
                                "Co(Laborative) Learning Workshop"))
 feedback06.df$session <- factor(feedback06.df$session,
-                    levels = c(6),
-                    labels = c("Equitable Partnerships"))
+                                levels = c(6),
+                                labels = c("Equitable Partnerships"))
 feedbackheri.df$session <- factor(feedbackheri.df$session,
-                    levels = c(14),
-                    labels = c("HERI"))
+                                  levels = c(14),
+                                  labels = c("HERI"))
 feedback.df$role <- factor(feedback.df$role,
                            levels = c(1,2,7,5,4,6),
                            labels = c("Student","Faculty","Research Staff","Corporate/Industry","Community Member","Other"))
 
-write_xlsx(feedback.df,"C:\\Users\\josep\\Documents\\HERI\\feedback.xlsx") #create a spreadsheet out of the dataframe; will stop knitting
+#write_xlsx(feedback.df,"C:\\Users\\josep\\Documents\\HERI\\feedback.xlsx") #create a spreadsheet out of the dataframe; will stop knitting
+#write_xlsx(feedback06.df,"C:\\Users\\josep\\Documents\\HERI\\feedback06.xlsx")
+#write_xlsx(feedbackheri.df,"C:\\Users\\josep\\Documents\\HERI\\feedbackheri.xlsx")
 
 #####################
 # Dumbbell Settings #
@@ -837,7 +840,7 @@ prepost.df [prepost.df$id=="knowledge",] %>%                 #runs code if these
         panel.grid.major.x = element_line(), 
         axis.ticks = element_blank())                                     #no ticks
 
-ggsave("All Sessions - Knowledge.png", height = 3.5, width = 7)
+ggsave("All Sessions - Knowledgeb.png", height = 3.5, width = 7)
 
 ###########################
 # A for all sessions #
@@ -908,7 +911,7 @@ ggsave("All Sessions - Overall Rating.png", height = 3.5, width = 7)
 
 # CHANGE thissession, GGSAVEs; RERUN for each session
 
-thissession <- "Concept of Trust"
+#thissession <- "Concept of Trust"
 #thissession <- "Structural Racism"
 #thissession <- "Participatory Budgeting"
 #thissession <- "Social Determinants of Health"
@@ -919,7 +922,7 @@ thissession <- "Concept of Trust"
 #thissession <- "Intervention Mapping"
 #thissession <- "Culturally Responsive Evaluation"
 #thissession <- "Co-creating Data Visualization"
-#thissession <- "Co-Lab(orative) Learning Workshop"
+thissession <- "Co-Lab(orative) Learning Workshop"
 
 ######################
 # K and A by session #
@@ -955,7 +958,7 @@ prepost.df [prepost.df$session==thissession,] %>%
         panel.background = element_rect(fill = 'transparent',color = NA) 
         )
 
-ggsave("Session 01 - K and A.png", height = 1.5, width = 5)
+ggsave("Session ## - K and A.png", height = 1.5, width = 5)
 
 #####################
 # Likert by session #
@@ -965,7 +968,7 @@ quant <- likert(likert.df[likert.df$session==thissession,2:5])
 plot(quant, positive.order = TRUE) + 
   labs(title = thissession)
 
-ggsave("Session 01 - Quant.png", width = 9, height = 2.5)
+ggsave("Session ## - Quant.png", width = 9, height = 2.5)
 
 #########################
 # Likelihood by session #
@@ -974,6 +977,6 @@ likely <- likert(likely.df[likely.df$session==thissession,2:3])
 plot(likely, positive.order = TRUE) + 
   labs(title = thissession, subtitle = "How likely are you to...")
 
-ggsave("Session 01 - Likely.png", width = 9, height = 2)
+ggsave("Session ## - Likely.png", width = 9, height = 2)
 
 ```
