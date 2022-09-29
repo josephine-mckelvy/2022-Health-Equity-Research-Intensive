@@ -39,7 +39,7 @@ When you click the **Knit** button a document will be generated that includes bo
 ###################
 
 # Import data, subset and name the variables in the dataframes, remove blanks (by language)
-raw.df <- read.csv("UNC Center for Health Equity Research - Health Equity Summer Intensive Evaluation_September 6, 2022_07.10.csv", stringsAsFactors = TRUE)
+raw.df <- read.csv("UNC Center for Health Equity Research - Health Equity Summer Intensive Evaluation_September 29, 2022_08.47.csv", stringsAsFactors = TRUE)
 raw.df <- raw.df[3:nrow(raw.df),] #cut rows 2-3 with question wording & "ImportID"
 raw.df$Q3 <- as.character(raw.df$Q3) #convert CATA to character and not factor
 
@@ -71,12 +71,12 @@ ksa08.df <- raw.df[raw.df$Q3 %like% "8",c(21,498:501)]
 ksa09.df <- raw.df[raw.df$Q3 %like% "9",c(21,566:569)]
 ksa10.df <- raw.df[raw.df$Q3 %like% "10",c(21,634:637)]
 ksa11.df <- raw.df[raw.df$Q3 %like% "11",c(21,702:705)]
-ksaws.df <- raw.df[raw.df$Q3 %like% "14",c(21,770:773)]
+ksaws.df <- raw.df[raw.df$Q3 %like% "12",c(21,770:773)]
 
 #rename the session no. for CATA obs & listwise delete missingness
 ksa01.df$Q3[ksa01.df$Q3 != "1"] <- "1"                  #this is key for the CATA
 ksa01.df[ksa01.df==""] <- NA
-ksa01.df <- na.omit(ksa01.df)
+ksa01.df <- na.omit(ksa01.df)                          #listwise delete missingness, else can't compute means
 
 ksa02.df$Q3[ksa02.df$Q3 != "2"] <- "2"
 ksa02.df[ksa02.df==""] <- NA
@@ -96,7 +96,7 @@ ksa05.df <- na.omit(ksa05.df)
 
 ksa06.df$Q3[ksa06.df$Q3 != "6"] <- "6"
 ksa06.df[ksa06.df==""] <- NA
-ksa06.df <- na.omit(ksa06.df)
+ksa06.df <- na.omit(ksa06.df)                          #listwise delete missingness, else can't compute means
 
 ksa07.df$Q3[ksa07.df$Q3 != "7"] <- "7"
 ksa07.df[ksa07.df==""] <- NA
@@ -112,7 +112,7 @@ ksa09.df <- na.omit(ksa09.df)
 
 ksa10.df$Q3[ksa10.df$Q3 != "10"] <- "10"
 ksa10.df[ksa10.df==""] <- NA
-ksa10.df <- na.omit(ksa10.df)
+ksa10.df <- na.omit(ksa10.df)                          #listwise delete missingness, else can't compute means
 
 ksa11.df$Q3[ksa11.df$Q3 != "11"] <- "11"
 ksa11.df[ksa11.df==""] <- NA
@@ -219,7 +219,7 @@ overall08.df <- raw.df[raw.df$Q3 %like% "8",c(21,518)]
 overall09.df <- raw.df[raw.df$Q3 %like% "9",c(21,582)]
 overall10.df <- raw.df[raw.df$Q3 %like% "10",c(21,646)]
 overall11.df <- raw.df[raw.df$Q3 %like% "11",c(21,710)]
-overallws.df <- raw.df[raw.df$Q3 %like% "14",c(21,775)]
+overallws.df <- raw.df[raw.df$Q3 %like% "12",c(21,774)]
 
 #rename the session no. for CATA obs & listwise delete missingness
 overall01.df$Q3[overall01.df$Q3 != "1"] <- "1"          #this is key for the CATA
@@ -331,12 +331,13 @@ overall.df$session <- factor(overall.df$session,
                                         "Co-Lab(orative) Learning Workshop"))
 overall.df$rating  <- as.numeric(as.character(overall.df$rating))
 
-#generate average scores for overall Q
-overalltot <- mean(overall.df$rating)
-
+#generate average scores for dumbbells: overall quality for all sessions
 overall.df %>%
   group_by(session) %>%
   summarise_at(vars("rating"), mean)-> overall.df
+
+#generate average scores for overall Q
+overalltot <- mean(overall.df$rating)
 
 #######################
 # Wrangle Likert Data #
@@ -354,7 +355,7 @@ likert08.df <- raw.df[raw.df$Q3 %like% "8",c(21,519:522)]
 likert09.df <- raw.df[raw.df$Q3 %like% "9",c(21,583:586)]
 likert10.df <- raw.df[raw.df$Q3 %like% "10",c(21,647:650)]
 likert11.df <- raw.df[raw.df$Q3 %like% "11",c(21,711:714)]
-likertws.df <- raw.df[raw.df$Q3 %like% "12",c(21,774:783)]
+likertws.df <- raw.df[raw.df$Q3 %like% "12",c(21,779:783)]
 
 #rename the Likert session no. for CATA obs & listwise delete missingness
 likert01.df$Q3[likert01.df$Q3 != "1"] <- "1"              #this is key for CATA
@@ -441,7 +442,7 @@ names(likertws.df) <- c("session",
                         "effective guidance",
                         "welcoming space",
                         "structured activities",
-                        "insightful formation",
+                        "insightful information",
                         "relevant techniques")
                             
 #bind the dataframes into one
@@ -473,7 +474,7 @@ likert.df$session <- factor(likert.df$session,
                                        "Co-creating Data Visualization"))
 likertws.df$session <- factor(likertws.df$session,
                               levels = c(12),
-                              labels = c("Co(Laborative) Learning Workshop"))
+                              labels = c("Co-Lab(orative) Learning Workshop"))
 
 likertlabels <- c("Strongly Disagree",
                   "Somewhat Disagree",
@@ -636,7 +637,7 @@ likely.df$session <- factor(likely.df$session,
                                        "Intervention Mapping",
                                        "Culturally Responsive Evaluation",
                                        "Co-creating Data Visualization",
-                                       "Co(Laborative) Learning Workshop"))
+                                       "Co-Lab(orative) Learning Workshop"))
 likelylabels <- c("Not at all Likely",
                   "Somewhat Unlikely",
                   "Neutral",
@@ -775,7 +776,7 @@ feedback.df$session <- factor(feedback.df$session,
                                "Intervention Mapping",
                                "Culturally Responsive Evaluation",
                                "Co-creating Data Visualization",
-                               "Co(Laborative) Learning Workshop"))
+                               "Co-Lab(orative) Learning Workshop"))
 feedback06.df$session <- factor(feedback06.df$session,
                                 levels = c(6),
                                 labels = c("Equitable Partnerships"))
@@ -831,8 +832,7 @@ prepost.df [prepost.df$id=="knowledge",] %>%                 #runs code if these
   geom_text(data=filter(prepost.df, session=="Intervention Mapping"),
             aes(x=post, y=session, label = "After"),
             color = teal, size=2, vjust=-1.5, fontface="bold",family="Lato")+
-  labs(title = "Knowledge Ratings Before & After Each Session", y = NULL, x = xsubtitle, 
-       caption = caption) +
+  labs(title = "Knowledge Ratings Before & After Each Session", y = NULL, x = xsubtitle, caption = caption) +
   theme(panel.border = element_blank(),                                   #no gap
         panel.background = element_rect(fill = 'transparent',color = NA), #transparent bkgd
         panel.grid.minor = element_blank(), 
@@ -840,7 +840,7 @@ prepost.df [prepost.df$id=="knowledge",] %>%                 #runs code if these
         panel.grid.major.x = element_line(), 
         axis.ticks = element_blank())                                     #no ticks
 
-ggsave("All Sessions - Knowledgeb.png", height = 3.5, width = 7)
+ggsave("All Sessions - Knowledge.png", height = 3.5, width = 7)
 
 ###########################
 # A for all sessions #
@@ -866,8 +866,7 @@ prepost.df [prepost.df$id == "ability",] %>%
   geom_text(data=filter(prepost.df, session=="Applying an Equity Lens"),
             aes(x=post, y=session, label = "After"),
             color = teal, size=2, vjust=-1.5, fontface="bold",family="Lato") +
-  labs(title = "Ability Ratings Before & After Each Session", y = NULL, x = xsubtitle, 
-       caption = caption) +
+  labs(title = "Ability Ratings Before & After Each Session", y = NULL, x = xsubtitle, caption = caption) +
   theme(panel.border = element_blank(),                                   
         panel.background = element_rect(fill = 'transparent',color = NA), 
         panel.grid.minor = element_blank(), 
@@ -969,6 +968,12 @@ plot(quant, positive.order = TRUE) +
   labs(title = thissession)
 
 ggsave("Session ## - Quant.png", width = 9, height = 2.5)
+
+#quantws <- likert(likertws.df[likertws.df$session==thissession,2:6])
+#plot(quantws, positive.order = TRUE) + 
+#  labs(title = thissession)
+
+#ggsave("Session 12 - Quant.png", width = 9, height = 2.5)
 
 #########################
 # Likelihood by session #
