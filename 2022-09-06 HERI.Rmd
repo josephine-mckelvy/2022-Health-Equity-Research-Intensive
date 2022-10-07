@@ -1,5 +1,5 @@
 ---
-title: "CHER Health Equity Research Intensive 2022"
+title: "CHER's 2022 Health Equity Research Intensive "
 author: "Josephine McKelvy"
 date: "2022-09-01"
 output: html_document
@@ -922,7 +922,7 @@ ggsave("Session All - Overall Rating.png", height = 3.5, width = 7)
 
 # CHANGE thissession, GGSAVEs; RERUN for each session
 
-#thissession <- "Concept of Trust"
+thissession <- "Concept of Trust"
 #thissession <- "Structural Racism"
 #thissession <- "Participatory Budgeting"
 #thissession <- "Social Determinants of Health"
