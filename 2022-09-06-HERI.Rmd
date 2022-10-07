@@ -1,5 +1,5 @@
 ---
-title: "CHER Health Equity Research Intensive 2022"
+title: "CHER's 2022 Health Equity Research Intensive"
 author: "Josephine McKelvy"
 date: "2022-09-01"
 output: html_document
@@ -39,7 +39,7 @@ When you click the **Knit** button a document will be generated that includes bo
 ###################
 
 # Import data, subset and name the variables in the dataframes, remove blanks (by language)
-raw.df <- read.csv("UNC Center for Health Equity Research - Health Equity Summer Intensive Evaluation_October 7, 2022_06.34.csv", stringsAsFactors = TRUE)
+raw.df <- read.csv("UNC Center for Health Equity Research - Health Equity Summer Intensive Evaluation_September 29, 2022_08.47.csv", stringsAsFactors = TRUE)
 raw.df <- raw.df[3:nrow(raw.df),] #cut rows 2-3 with question wording & "ImportID"
 raw.df$Q3 <- as.character(raw.df$Q3) #convert CATA to character and not factor
 
@@ -154,7 +154,7 @@ names(rename_ksa) <- c("ksa01.df",
 list2env(rename_ksa, envir = .GlobalEnv)
                             
 #bind the dumbbell dataframes into one
-ksa.df <- rbind(ksa01.df,
+wide.df <- rbind(ksa01.df,
                  ksa02.df,
                  ksa03.df,
                  ksa04.df,
@@ -167,8 +167,8 @@ ksa.df <- rbind(ksa01.df,
                  ksa11.df,
                  ksaws.df)
 
-#convert session name to factor 
-ksa.df$session <- factor(ksa.df$session,
+#convert dumbbell variables to factor or numeric type
+wide.df$session <- factor(wide.df$session,
                           levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
                           labels = c("Concept of Trust",
                                      "Structural Racism",
@@ -182,27 +182,26 @@ ksa.df$session <- factor(ksa.df$session,
                                      "Culturally Responsive Evaluation",
                                      "Co-creating Data Visualization",
                                      "Co-Lab(orative) Learning Workshop"))
-#convert pre/post scores to numeric type
-ksa.df$prek  <- as.numeric(as.character(ksa.df$prek))
-ksa.df$prea  <- as.numeric(as.character(ksa.df$prea))
-ksa.df$postk <- as.numeric(as.character(ksa.df$postk))
-ksa.df$posta <- as.numeric(as.character(ksa.df$posta))
+wide.df$prek  <- as.numeric(as.character(wide.df$prek))
+wide.df$prea  <- as.numeric(as.character(wide.df$prea))
+wide.df$postk <- as.numeric(as.character(wide.df$postk))
+wide.df$posta <- as.numeric(as.character(wide.df$posta))
 
-#create a knowledge data frame with generated average scores for dumbbells
-ksa.df %>%
+#generate average scores for dumbbells: knowledge for all sessions
+wide.df %>%
   group_by(session) %>%
   summarise_at(vars("prek","postk"), mean)-> prepostk.df
 prepostk.df$id <- "knowledge"                                 #this is key for aggregated dataset
 names(prepostk.df)<- c("session", "pre","post","id")
 
-#create an ability data frame with generated average scores for dumbbells
-ksa.df %>%
+#generate average scores for dumbbells: ability for all sessions
+wide.df %>%
   group_by(session) %>%
   summarise_at(vars("prea","posta"), mean)-> preposta.df
-preposta.df$id <- "ability"                                   #this is key for aggregated dataset
+preposta.df$id <- "ability"
 names(preposta.df)<- c("session", "pre","post","id")
 
-#create one data frame for knowledge & ability by session: https://r-graph-gallery.com/web-extended-dumbbell-plot-ggplot2.html
+#knowledge & ability by session: https://r-graph-gallery.com/web-extended-dumbbell-plot-ggplot2.html
 prepost.df <- rbind(prepostk.df,preposta.df)
 
 #########################
@@ -315,7 +314,7 @@ overall.df <- rbind(overall01.df,
                     overall11.df,
                     overallws.df)
 
-#convert session name to factor 
+#convert overall variables to factor or numeric type
 overall.df$session <- factor(overall.df$session,
                              levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
                              labels = c("Concept of Trust",
@@ -330,7 +329,6 @@ overall.df$session <- factor(overall.df$session,
                                         "Culturally Responsive Evaluation",
                                         "Co-creating Data Visualization",
                                         "Co-Lab(orative) Learning Workshop"))
-#convert overall rating score to numeric type
 overall.df$rating  <- as.numeric(as.character(overall.df$rating))
 
 #generate average scores for dumbbells: overall quality for all sessions
@@ -447,7 +445,7 @@ names(likertws.df) <- c("session",
                         "insightful information",
                         "relevant techniques")
                             
-#bind the Days 1-2 session dataframes into one
+#bind the dataframes into one
 likert.df <- rbind(likert01.df,
                    likert02.df,
                    likert03.df,
@@ -460,7 +458,7 @@ likert.df <- rbind(likert01.df,
                    likert10.df,
                    likert11.df)
 
-#convert variables to factor 
+#convert variables to factor or numeric type
 likert.df$session <- factor(likert.df$session,
                             levels = c(1,2,3,4,5,6,7,8,9,10,11),
                             labels = c("Concept of Trust",
@@ -625,7 +623,7 @@ likely.df <- rbind(likely01.df,
                    likely11.df,
                    likelyws.df)
 
-#convert likelihood variables to factor
+#convert likelihood variables to factor or numeric type
 likely.df$session <- factor(likely.df$session,
                             levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
                             labels = c("Concept of Trust",
@@ -789,9 +787,9 @@ feedback.df$role <- factor(feedback.df$role,
                            levels = c(1,2,7,5,4,6),
                            labels = c("Student","Faculty","Research Staff","Corporate/Industry","Community Member","Other"))
 
-#write_xlsx(feedback.df,"C:\\Users\\josep\\Documents\\HERI\\feedback-mmdd.xlsx") #create a spreadsheet out of the dataframe; will stop knitting
-#write_xlsx(feedback06.df,"C:\\Users\\josep\\Documents\\HERI\\feedbackS6-mmdd.xlsx")
-#write_xlsx(feedbackheri.df,"C:\\Users\\josep\\Documents\\HERI\\feedbackheri-mmdd.xlsx")
+#write_xlsx(feedback.df,"C:\\Users\\josep\\Documents\\HERI\\feedback.xlsx") #create a spreadsheet out of the dataframe; will stop knitting
+#write_xlsx(feedback06.df,"C:\\Users\\josep\\Documents\\HERI\\feedback06.xlsx")
+#write_xlsx(feedbackheri.df,"C:\\Users\\josep\\Documents\\HERI\\feedbackheri.xlsx")
 
 #####################
 # Dumbbell Settings #
@@ -933,7 +931,7 @@ ggsave("Session All - Overall Rating.png", height = 3.5, width = 7)
 #thissession <- "Intervention Mapping"
 #thissession <- "Culturally Responsive Evaluation"
 #thissession <- "Co-creating Data Visualization"
-#thissession <- "Co-Lab(orative) Learning Workshop"
+thissession <- "Co-Lab(orative) Learning Workshop"
 
 ######################
 # K and A by session #
